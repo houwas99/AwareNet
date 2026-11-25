@@ -83,13 +83,6 @@ start_windows.bat              Lanceur Windows
 start_termux.sh                Lanceur Termux
 ```
 
-## Limites de cette description
-
-- Le nombre de campagnes, de cibles et de médias dépend de la base et des fichiers créés à l’exécution; le dépôt seul ne permet pas de les compter.
-- Les 49 modèles intégrés sont des identifiants déclarés dans `app.py`; les fichiers personnalisés peuvent augmenter ce nombre.
-- Les tests présents sont limités et ne démontrent pas le fonctionnement complet de toutes les pages, permissions, captures ou intégrations externes.
-- L’implémentation actuelle doit faire l’objet d’une revue indépendante avant tout exercice, en particulier concernant l’authentification, les permissions navigateur, les secrets, l’exposition réseau, la conservation et la suppression des données.
-
 ## Utilisation responsable
 
 Réservez tout test à des systèmes et participants pour lesquels vous avez une autorisation explicite. Préférez des identités et des données synthétiques, informez les participants, limitez la collecte au strict nécessaire et définissez une durée de conservation et une procédure de suppression. N’utilisez pas les pages pour recueillir de vrais mots de passe, informations personnelles ou médias de personnes non consentantes.
