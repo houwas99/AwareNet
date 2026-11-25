@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Attacker Panel — Authentication</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #080810; --surface: #12121e; --border: rgba(255,255,255,0.07);
+    --bmd: rgba(255,255,255,0.12); --white: #fff; --off: #e0e0f0;
+    --muted: #5a5a7a; --faint: #2e2e48;
+    --red: #e8294c; --red-d: rgba(232,41,76,0.1); --red-b: rgba(232,41,76,0.3);
+    --mono: 'DM Mono', monospace; --sans: 'DM Sans', sans-serif;
+    --display: 'Playfair Display', serif;
+  }
+  *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    background: var(--bg); color: var(--off);
+    font-family: var(--sans); min-height:100vh;
+    display:flex; align-items:center; justify-content:center;
+    padding: 24px;
+  }
+
+  /* grain */
+  body::after {
+    content:''; position:fixed; inset:0; pointer-events:none; z-index:999;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+    opacity: 0.4;
+  }
+
+  .card {
+    width: 100%; max-width: 400px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    animation: popIn 0.35s cubic-bezier(0.34,1.56,0.64,1) both;
+  }
+
+  @keyframes popIn { from{opacity:0;transform:scale(0.88)} to{opacity:1;transform:scale(1)} }
+
+  /* Red top accent */
+  .card::before {
+    content:''; display:block; height:2px;
+    background: linear-gradient(90deg, var(--red), transparent);
+  }
+
+  .card-top {
+    padding: 32px 32px 24px;
+    border-bottom: 1px solid var(--border);
+    text-align: center;
+  }
+
+  .lock-icon {
+    font-size: 2.4rem; margin-bottom: 16px; display:block;
+  }
+
+  .card-top h1 {
+    font-family: var(--display);
+    font-size: 1.6rem; font-weight: 900;
+    color: var(--white); margin-bottom: 8px;
+  }
+
+  .card-top p {
+    font-family: var(--mono);
+    font-size: 0.68rem; letter-spacing: 0.1em;
+    color: var(--muted);
+  }
+
+  .card-body { padding: 28px 32px; }
+
+  .field-label {
+    font-family: var(--mono);
+    font-size: 0.62rem; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--muted);
+    margin-bottom: 8px; display:block;
+  }
+
+  .field-input {
+    width: 100%;
+    background: #0d0d18;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 14px;
+    font-family: var(--mono);
+    font-size: 0.9rem;
+    color: var(--white);
+    outline: none;
+    transition: border-color 0.2s;
+    margin-bottom: 16px;
+    letter-spacing: 0.08em;
+  }
+
+  .field-input:focus { border-color: var(--white); }
+
+  .error-msg {
+    background: var(--red-d);
+    border: 1px solid var(--red-b);
+    border-radius: 6px;
+    padding: 10px 14px;
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    color: var(--red);
+    margin-bottom: 16px;
+    display: flex; align-items:center; gap:8px;
+  }
+
+  .btn-submit {
+    width: 100%; padding: 13px;
+    background: var(--white); color: var(--bg);
+    border: none; border-radius: 8px;
+    font-family: var(--mono); font-size: 0.82rem;
+    font-weight: 700; letter-spacing: 0.08em;
+    cursor: pointer; transition: background 0.2s;
+    margin-bottom: 16px;
+  }
+  .btn-submit:hover { background: #e0e0f0; }
+
+  .card-footer {
+    text-align: center;
+    font-family: var(--mono);
+    font-size: 0.62rem; color: var(--faint);
+    line-height: 1.7;
+  }
+
+  .card-footer a { color: var(--muted); transition: color 0.2s; }
+  .card-footer a:hover { color: var(--white); }
+</style>
+</head>
+<body>
+
+<div class="card">
+  <div class="card-top">
+    <span class="lock-icon">🔐</span>
+    <h1>Attacker Panel</h1>
+    <p>AWARENET · INSTRUCTOR ACCESS ONLY</p>
+  </div>
+
+  <div class="card-body">
+    {% if error %}
+    <div class="error-msg">⚠ {{ error }}</div>
+    {% endif %}
+
+    <form method="POST" action="/panel/{{ token }}">
+      <label class="field-label" for="pwd">Password</label>
+      <input
+        class="field-input"
+        type="password"
+        id="pwd"
+        name="password"
+        placeholder="Enter instructor password"
+        autofocus
+        autocomplete="current-password"
+      >
+      <button class="btn-submit" type="submit">
+        Unlock Panel  →
+      </button>
+    </form>
+
+    <div class="card-footer">
+      Password is shown in the terminal when the page loads.<br>
+      A new password is generated each time you visit this page.<br><br>
+      <a href="/">← Home</a> &nbsp;·&nbsp; <a href="/consent">Target Link</a>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

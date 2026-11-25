@@ -1,0 +1,35 @@
+__pycache__/
+*.pyc
+*.pyo
+*.db
+*.db-shm
+*.db-wal
+.env
+.build_config
+uploads/
+reports/
+campaigns.json
+*.apk
+*.log
+.DS_Store
+Thumbs.db
+# --- Licence / .exe ---
+license.key
+.license_activated
+.hwid
+*.key
+dist/
+build/
+*.spec
+!AwareNet.spec
+tools/__pycache__/
+whitelist.txt
+# PyInstaller
+*.manifest
+*.pyinstaller
+# --- Ressources ---
+awarenet ressources/
+awarenet ressources
+*.db
+*.db-shm
+*.db-wal

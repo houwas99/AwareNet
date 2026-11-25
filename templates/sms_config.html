@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AwareNet — SMS Configuration</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#080810;--surface:#0e0e1a;--raised:#141424;--card:#111120;
+  --border:rgba(255,255,255,.09);--bmd:rgba(255,255,255,.18);
+  --white:#fff;--off:#d4d4ee;--muted:#8080b0;--dim:#4a4a72;
+  --red:#e8294c;--green:#1ed760;--amber:#f59e0b;--blue:#3b82f6;
+  --mono:'DM Mono',monospace;--sans:'DM Sans',sans-serif;}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--off);font-family:var(--sans);padding:24px;min-height:100vh;-webkit-font-smoothing:antialiased;}
+h1{font-size:1.2rem;font-weight:600;color:var(--white);margin-bottom:4px;}
+p{color:var(--muted);font-size:.82rem;margin-bottom:20px;}
+.card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:24px;max-width:620px;margin-bottom:16px;}
+.fl{font-family:var(--mono);font-size:.55rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:5px;display:block;}
+.fi,.fs,.fta{width:100%;background:rgba(0,0,0,.4);border:1px solid var(--border);border-radius:5px;padding:9px 12px;font-family:var(--mono);font-size:.78rem;color:var(--white);outline:none;margin-bottom:12px;}
+.fta{min-height:100px;resize:vertical;font-size:.72rem;}
+.fi:focus,.fs:focus,.fta:focus{border-color:var(--bmd);}
+.fgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.fgrid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;}
+.btn{display:inline-flex;align-items:center;gap:5px;font-family:var(--mono);font-size:.6rem;padding:8px 14px;border-radius:4px;border:1px solid var(--border);background:var(--raised);color:var(--off);cursor:pointer;transition:all .12s;}
+.btn:hover{background:var(--dim);color:var(--white);}
+.btn.primary{background:var(--white);color:var(--bg);border-color:var(--white);font-weight:600;}
+.btn.primary:hover{background:#e8e8f0;}
+.btn.success{background:rgba(30,215,96,.1);color:var(--green);border-color:rgba(30,215,96,.2);}
+.btn.success:hover{background:rgba(30,215,96,.2);}
+.toasts{position:fixed;bottom:16px;right:16px;z-index:9000;display:flex;flex-direction:column;gap:5px;align-items:flex-end;pointer-events:none;}
+.toast{background:var(--surface);border:1px solid var(--bmd);border-radius:5px;padding:8px 13px;font-family:var(--mono);font-size:.62rem;color:var(--off);max-width:280px;animation:slideIn .2s ease both;box-shadow:0 4px 18px rgba(0,0,0,.5);}
+.toast.ok{border-color:rgba(30,215,96,.3);}.toast.danger{border-color:var(--red);}
+.rt-divider{height:1px;background:var(--border);margin:16px 0;}
+a{color:var(--blue);text-decoration:none;}
+a:hover{text-decoration:underline;}
+@media(max-width:640px){.fgrid,.fgrid3{grid-template-columns:1fr;}}
+@keyframes slideIn{from{opacity:0;transform:translateX(8px)}to{opacity:1;transform:translateX(0)}}
+</style>
+</head>
+<body>
+
+<h1>💬 SMS Configuration</h1>
+<p>Configure SMS provider (Twilio) and send SMS phishing simulations. Same templating system as Email.</p>
+
+<div class="card">
+  <div class="fl">Provider</div>
+  <select class="fs" id="f-provider">
+    <option value="twilio">Twilio</option>
+    <option value="generic">Generic HTTP</option>
+  </select>
+  <div class="fl">Account SID (Twilio)</div>
+  <input class="fi" id="f-sid" placeholder="ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" autocomplete="off">
+  <div class="fl">Auth Token</div>
+  <input class="fi" id="f-token" type="password" placeholder="Auth token or API key" autocomplete="off">
+  <div class="fgrid">
+    <div><div class="fl">From Number (Twilio)</div><input class="fi" id="f-from" placeholder="+1234567890"></div>
+    <div><div class="fl">Sender ID (Generic)</div><input class="fi" id="f-sender" placeholder="AwareNet"></div>
+  </div>
+  <div class="fl">Generic API URL (if provider=generic)</div>
+  <input class="fi" id="f-api" placeholder="https://api.example.com/sms">
+  <div class="rt-divider"></div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;">
+    <button class="btn primary" onclick="saveConfig()">💾 Save Configuration</button>
+    <button class="btn success" onclick="testConfig()">📱 Test SMS</button>
+  </div>
+</div>
+
+<div class="card">
+  <div class="fl" style="margin-bottom:10px;">📨 Send SMS</div>
+
+  <div class="fgrid3">
+    <div>
+      <div class="fl">Language</div>
+      <select class="fs" id="f-lang" onchange="loadTemplates()">
+        <option value="en">🇬🇧 English</option>
+        <option value="fr">🇫🇷 Français</option>
+        <option value="es">🇪🇸 Español</option>
+        <option value="de">🇩🇪 Deutsch</option>
+        <option value="pt">🇧🇷 Português</option>
+        <option value="it">🇮🇹 Italiano</option>
+        <option value="nl">🇳🇱 Nederlands</option>
+        <option value="pl">🇵🇱 Polski</option>
+        <option value="ru">🇷🇺 Русский</option>
+        <option value="ja">🇯🇵 日本語</option>
+        <option value="ko">🇰🇷 한국어</option>
+        <option value="zh-CN">🇨🇳 简体中文</option>
+        <option value="zh-TW">🇹🇼 繁體中文</option>
+        <option value="tr">🇹🇷 Türkçe</option>
+        <option value="vi">🇻🇳 Tiếng Việt</option>
+        <option value="th">🇹🇭 ไทย</option>
+        <option value="id">🇮🇩 Bahasa Indonesia</option>
+        <option value="sv">🇸🇪 Svenska</option>
+        <option value="ar">🇸🇦 العربية</option>
+      </select>
+    </div>
+    <div>
+      <div class="fl">Template</div>
+      <select class="fs" id="f-template" onchange="previewTemplate()">
+        <option value="">— Select a template —</option>
+      </select>
+    </div>
+    <div>
+      <div class="fl">Campaign Slug</div>
+      <input class="fi" id="f-slug" placeholder="campaign-slug">
+    </div>
+  </div>
+
+  <div class="fl">Recipient Phone</div>
+  <input class="fi" id="f-to" placeholder="+33612345678">
+
+  <div class="fl">Target Name (for {{ name }})</div>
+  <input class="fi" id="f-name" placeholder="John Doe">
+
+  <div class="fl">Link (for {{ link }})</div>
+  <input class="fi" id="f-link" placeholder="https://your-server/pretext/campaign-slug">
+
+  <div class="fl">Message <span style="color:var(--dim);font-weight:400;text-transform:none;">— variables: {{ name }}, {{ link }}, {{ topic }}, {{ time }}</span></div>
+  <textarea class="fta" id="f-body" placeholder="SMS body..."></textarea>
+
+  <div class="rt-divider"></div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;">
+    <button class="btn primary" onclick="sendSMS()">📤 Send SMS</button>
+    <button class="btn" onclick="previewTemplate()">↻ Preview Template</button>
+  </div>
+</div>
+
+<div class="card">
+  <div class="fl" style="margin-bottom:10px;">📋 Available Templates (<span id="tmpl-count">0</span>)</div>
+  <div id="templates-list">
+    <p style="color:var(--dim);font-size:.7rem;">Loading templates...</p>
+  </div>
+</div>
+
+<div style="text-align:center;margin-top:16px;">
+  <a href="/panel/{{ token }}">← Back to Panel</a>
+</div>
+
+<div class="toasts" id="toasts"></div>
+
+<script>
+const TOKEN = '{{ token }}';
+let allTemplates = [];
+
+function toast(msg, type){
+  const t = document.createElement('div'); t.className='toast '+(type||'');
+  t.textContent=msg; document.getElementById('toasts').appendChild(t);
+  setTimeout(()=>t.remove(),3500);
+}
+
+async function api(path, opts){
+  opts=opts||{};
+  var headers={'Content-Type':'application/json','X-Attacker-Token':TOKEN};
+  if(opts.headers) Object.assign(headers,opts.headers);
+  try{
+    var res=await fetch(path,{method:opts.method||'GET',headers,body:opts.body?JSON.stringify(opts.body):undefined});
+    if(!res.ok){var err=await res.json().catch(()=>({error:res.statusText}));throw new Error(err.error||res.statusText);}
+    return await res.json();
+  }catch(e){throw e;}
+}
+
+async function loadConfig(){
+  try{
+    var data=await api('/api/sms/config');
+    if(data.configured || data.provider){
+      document.getElementById('f-provider').value=data.provider||'twilio';
+      document.getElementById('f-sid').value=data.account_sid||'';
+      document.getElementById('f-from').value=data.from_number||'';
+      document.getElementById('f-sender').value=data.sender_id||'';
+    }
+  }catch(e){console.error('Load SMS config:',e);}
+}
+
+async function saveConfig(){
+  try{
+    await api('/api/sms/config',{method:'POST',body:{
+      provider:document.getElementById('f-provider').value,
+      account_sid:document.getElementById('f-sid').value,
+      auth_token:document.getElementById('f-token').value,
+      from_number:document.getElementById('f-from').value,
+      sender_id:document.getElementById('f-sender').value,
+      api_key:document.getElementById('f-api').value,
+    }});
+    toast('SMS Configuration saved','ok');
+  }catch(e){toast('Error: '+e.message,'danger');}
+}
+
+async function testConfig(){
+  var to=prompt('Send test SMS to (phone):');
+  if(!to)return;
+  try{
+    await api('/api/sms/test',{method:'POST',body:{to_number:to}});
+    toast('Test SMS sent to '+to,'ok');
+  }catch(e){toast('Failed: '+e.message,'danger');}
+}
+
+async function loadTemplates(){
+  var lang = document.getElementById('f-lang').value;
+  try{
+    var data=await api('/api/sms/templates?lang='+lang);
+    allTemplates = data;
+    var listHtml='';
+    var selHtml='<option value="">— Select a template —</option>';
+    data.forEach(function(t,i){
+      listHtml+='<div style="background:var(--raised);border-radius:6px;padding:10px;margin-bottom:6px;">';
+      listHtml+='<div style="font-size:.73rem;font-weight:600;color:var(--white);margin-bottom:2px;">'+escapeHtml(t.name)+'</div>';
+      listHtml+='<div style="font-size:.65rem;color:var(--muted); white-space:pre-wrap;">'+escapeHtml(t.body)+'</div>';
+      listHtml+='<div style="font-size:.6rem;color:var(--dim);">Lang: '+t.lang+'</div>';
+      listHtml+='</div>';
+      selHtml+='<option value="'+i+'">'+escapeHtml(t.name)+'</option>';
+    });
+    document.getElementById('templates-list').innerHTML = listHtml || '<p style="color:var(--dim);font-size:.7rem;">No templates for this language.</p>';
+    document.getElementById('f-template').innerHTML = selHtml;
+    document.getElementById('tmpl-count').textContent = data.length;
+  }catch(e){
+    document.getElementById('templates-list').innerHTML='<p style="color:var(--red);font-size:.7rem;">Failed: '+e.message+'</p>';
+  }
+}
+
+function previewTemplate(){
+  var idx = parseInt(document.getElementById('f-template').value);
+  if(isNaN(idx) || !allTemplates[idx]) return;
+  var t = allTemplates[idx];
+  document.getElementById('f-body').value = t.body;
+}
+
+async function sendSMS(){
+  var to = document.getElementById('f-to').value.trim();
+  var body = document.getElementById('f-body').value.trim();
+  var name = document.getElementById('f-name').value.trim() || 'User';
+  var link = document.getElementById('f-link').value.trim();
+  var slug = document.getElementById('f-slug').value.trim();
+
+  if(!to){ toast('Enter a recipient number','danger'); return; }
+  if(!body){ toast('Enter a message','danger'); return; }
+
+  try{
+    await api('/api/sms/send',{method:'POST',body:{
+      to_number: to,
+      body: body,
+      target_name: name,
+      link: link,
+      slug: slug,
+    }});
+    toast('SMS sent to '+to,'ok');
+  }catch(e){ toast('Failed: '+e.message,'danger'); }
+}
+
+function escapeHtml(t){return String(t||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+loadConfig();
+loadTemplates();
+</script>
+</body>
+</html>

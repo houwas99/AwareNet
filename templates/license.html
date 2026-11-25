@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AwareNet — Activation requise</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #080810; --surface: #12121e; --border: rgba(255,255,255,0.07);
+    --bmd: rgba(255,255,255,0.12); --white: #fff; --off: #e0e0f0;
+    --muted: #5a5a7a; --faint: #2e2e48;
+    --red: #e8294c; --red-d: rgba(232,41,76,0.1); --red-b: rgba(232,41,76,0.3);
+    --green: #1ed760; --green-d: rgba(30,215,96,0.12); --green-b: rgba(30,215,96,0.35);
+    --mono: 'DM Mono', monospace; --sans: 'DM Sans', sans-serif; --display: 'Playfair Display', serif;
+  }
+  *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+  body{background:var(--bg);color:var(--off);font-family:var(--sans);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;overflow-y:auto}
+  body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:999;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");opacity:.4}
+  .card{width:100%;max-width:480px;background:var(--surface);border:1px solid var(--border);border-radius:16px;overflow:hidden;animation:popIn .35s cubic-bezier(0.34,1.56,0.64,1) both;max-height:92vh;overflow-y:auto}
+  @keyframes popIn{from{opacity:0;transform:scale(.88)}to{opacity:1;transform:scale(1)}}
+  .card::before{content:'';display:block;height:2px;background:linear-gradient(90deg,var(--red),transparent)}
+  .card-top{padding:32px 32px 24px;border-bottom:1px solid var(--border);text-align:center}
+  .card-top h1{font-family:var(--display);font-size:1.65rem;font-weight:900;color:var(--white);margin-bottom:6px}
+  .card-top p{font-family:var(--mono);font-size:.65rem;letter-spacing:.11em;color:var(--muted)}
+  .badge{display:inline-block;margin-top:12px;padding:5px 10px;border-radius:999px;background:rgba(255,255,255,.06);border:1px solid var(--border);font-family:var(--mono);font-size:.62rem;color:var(--muted);letter-spacing:.08em}
+  .card-body{padding:28px 32px}
+  .alert{border-radius:8px;padding:12px 14px;font-family:var(--mono);font-size:.73rem;margin-bottom:16px;display:flex;gap:8px;align-items:center;line-height:1.5}
+  .alert-err{background:var(--red-d);border:1px solid var(--red-b);color:var(--red)}
+  .alert-ok{background:var(--green-d);border:1px solid var(--green-b);color:var(--green)}
+  .alert-info{background:rgba(255,255,255,.05);border:1px solid var(--border);color:var(--muted)}
+  .field-label{font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;display:block}
+  .field-input{width:100%;background:#0d0d18;border:1px solid var(--border);border-radius:8px;padding:12px 14px;font-family:var(--mono);font-size:.88rem;color:var(--white);outline:none;transition:border-color .2s;margin-bottom:14px;letter-spacing:.06em;text-transform:uppercase}
+  .field-input:focus{border-color:var(--white)}
+  .field-input::placeholder{text-transform:none;letter-spacing:0}
+  .btn{width:100%;padding:13px;border-radius:8px;font-family:var(--mono);font-size:.82rem;font-weight:700;letter-spacing:.08em;cursor:pointer;transition:all .2s;border:none;display:flex;align-items:center;justify-content:center;gap:8px;text-decoration:none}
+  .btn-primary{background:var(--white);color:var(--bg);margin-bottom:10px}
+  .btn-primary:hover{background:#e0e0f0}
+  .btn-ghost{background:transparent;color:var(--white);border:1px solid var(--bmd);margin-bottom:16px}
+  .btn-ghost:hover{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.2)}
+  .hwid-box{background:#0d0d18;border:1px solid var(--border);border-radius:8px;padding:12px 14px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .hwid-label{font-family:var(--mono);font-size:.60rem;letter-spacing:.12em;color:var(--muted);text-transform:uppercase}
+  .hwid-value{font-family:var(--mono);font-size:.88rem;color:var(--white);letter-spacing:.12em;font-weight:500}
+  .hwid-copy{padding:6px 10px;border-radius:6px;background:rgba(255,255,255,.08);border:1px solid var(--border);color:var(--off);font-family:var(--mono);font-size:.70rem;cursor:pointer;transition:background .2s;white-space:nowrap}
+  .hwid-copy:hover{background:rgba(255,255,255,.14)}
+  .foot{text-align:center;font-family:var(--mono);font-size:.60rem;color:var(--faint);line-height:1.7;margin-top:4px}
+  .foot a{color:var(--muted);transition:color .2s}
+  .foot a:hover{color:var(--white)}
+  .divider{height:1px;background:var(--border);margin:18px 0}
+  .steps{list-style:none;display:flex;flex-direction:column;gap:10px;margin-bottom:6px}
+  .steps li{display:flex;gap:10px;align-items:flex-start;font-family:var(--mono);font-size:.72rem;color:var(--muted);line-height:1.5}
+  .step-n{flex-shrink:0;width:20px;height:20px;border-radius:50%;background:rgba(255,255,255,.08);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:.62rem;color:var(--off);font-weight:700}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="card-top">
+    <div style="font-size:2.2rem;margin-bottom:12px">{% if expired %}⏰{% else %}🔑{% endif %}</div>
+    <h1>{% if expired %}Licence expirée{% else %}Activation requise{% endif %}</h1>
+    <p>AWARENET · {% if expired %}24H ÉCOULÉES — RENOUVELLEMENT REQUIS{% else %}LICENCE REQUISE POUR CONTINUER{% endif %}</p>
+    <div class="badge">Version .EXE — {% if info and info.expires_at %}Expire {{ info.expires_at }} · {{ info.remaining_hours }}h restantes{% else %}Accès protégé · 24h{% endif %}</div>
+  </div>
+  <div class="card-body">
+    {% if info and info.reason and 'hors_connexion' in info.reason %}
+    <div class="alert alert-err">📡 Hors connexion — vérifiez votre internet. Platoboost nécessite une connexion pour valider la clé.</div>
+    {% endif %}
+    {% if expired %}
+    <div class="alert alert-err">⏰ Licence expirée après {{ info.duration_hours }}h. Récupère une nouvelle clé (même HWID → même clé réactive 24h).</div>
+    {% endif %}
+    {% if error %}
+    <div class="alert alert-err">⚠ {{ error }}</div>
+    {% endif %}
+    {% if success %}
+    <div class="alert alert-ok">✓ {{ success }}</div>
+    {% endif %}
+    {% if info and info.valid and info.expires_at %}
+    <div class="alert alert-info">⏳ Expire le <b>{{ info.expires_at }}</b> — <span id="countdown" data-expires="{{ info.expires_at }}"></span></div>
+    {% endif %}
+
+    <!-- HWID : pour Platoboost, le lien est déjà lié à ta machine, pas besoin de coller HWID -->
+    {% if info and info.platoboost %}
+    <div class="hwid-box" style="opacity:.6">
+      <div>
+        <div class="hwid-label">ID machine (Platoboost, auto-lié)</div>
+        <div class="hwid-value" id="hwidVal" style="font-size:.72rem;word-break:break-all">{{ hwid }}</div>
+      </div>
+      <button class="hwid-copy" onclick="copyHwid()">Copier</button>
+    </div>
+    <div class="alert alert-info">
+      ℹ Le lien est déjà lié à ta machine. Pas besoin de coller le HWID — complète juste les tâches et copie la clé <b>KEY_...</b>.
+    </div>
+    <ol class="steps">
+      <li><span class="step-n">1</span> Clique <b style="color:var(--off)">Obtenir ma clé</b> → Linkvertise</li>
+      <li><span class="step-n">2</span> Complète les étapes et copie ta clé <span style="color:var(--off)">KEY_...</span></li>
+      <li><span class="step-n">3</span> Reviens ici, colle <b>KEY_...</b> et <b style="color:var(--off)">Activer</b></li>
+    </ol>
+    {% else %}
+    <div class="hwid-box">
+      <div>
+        <div class="hwid-label">Votre HWID (ID machine)</div>
+        <div class="hwid-value" id="hwidVal">{{ hwid }}</div>
+      </div>
+      <button class="hwid-copy" onclick="copyHwid()">Copier</button>
+    </div>
+    <div class="alert alert-info">
+      ℹ Copie ton <b>HWID</b> et colle-le sur la page d'obtention de clé. La clé est liée à ta machine.
+    </div>
+    <ol class="steps">
+      <li><span class="step-n">1</span> Clique sur <b style="color:var(--off)">Obtenir ma clé</b> → lien externe</li>
+      <li><span class="step-n">2</span> Colle ton HWID et récupère <span style="color:var(--off)">AWARE-XXXX-...</span></li>
+      <li><span class="step-n">3</span> Reviens ici, colle la clé et <b style="color:var(--off)">Activer</b></li>
+    </ol>
+    {% endif %}
+
+    <a href="{{ key_url }}" target="_blank" rel="noopener" class="btn btn-ghost" id="getKeyBtn">
+      🔗 Obtenir ma clé — Lien externe ↗
+    </a>
+
+    <div class="divider"></div>
+
+    <form method="POST" action="/license" id="licenseForm">
+      <label class="field-label" for="key">Clé de licence</label>
+      {% if info and info.platoboost %}
+      <input class="field-input" type="text" id="key" name="key" placeholder="KEY_..." value="{{ key or '' }}" autocomplete="off" spellcheck="false" style="text-transform:none;letter-spacing:0">
+      {% else %}
+      <input class="field-input" type="text" id="key" name="key" placeholder="AWARE-XXXX-XXXX-XXXX-XXXX" value="{{ key or '' }}" autocomplete="off" spellcheck="false" maxlength="30">
+      {% endif %}
+      <button class="btn btn-primary" type="submit">Activer AwareNet →</button>
+    </form>
+
+    <div class="foot">
+      Lien configuré : <a href="{{ key_url }}" target="_blank" rel="noopener">{{ key_url }}</a><br>
+      {% if info and 'hors_connexion' in info.reason %}📡 Hors connexion — internet requis<br>{% endif %}
+      Besoin d'aide ? Contacte l'administrateur avec ton HWID.<br>
+      <span style="opacity:.6">Platoboost online · 24h par activation</span>
+      {% if info and info.activated_at %}<br><span style="opacity:.5">Activée: {{ info.activated_at }} → Expire: {{ info.expires_at }}</span>{% endif %}
+    </div>
+  </div>
+</div>
+
+<script>
+function copyHwid(){
+  const v = document.getElementById('hwidVal').textContent.trim();
+  navigator.clipboard.writeText(v).then(()=>{
+    const b=document.querySelector('.hwid-copy');
+    const old=b.textContent; b.textContent='Copié ✓'; setTimeout(()=>b.textContent=old,1500);
+  });
+}
+// countdown 24h
+(function(){
+  const el=document.getElementById('countdown');
+  if(!el) return;
+  const expStr=el.dataset.expires;
+  if(!expStr) return;
+  const exp=new Date(expStr.replace('T',' '));
+  function tick(){
+    const now=new Date();
+    const diff=Math.max(0, Math.floor((exp-now)/1000));
+    if(diff<=0){ el.textContent='Expirée — récupère une nouvelle clé'; return; }
+    const h=Math.floor(diff/3600), m=Math.floor((diff%3600)/60), s=diff%60;
+    el.textContent=h+'h '+m+'m '+s+'s restantes';
+  }
+  tick(); setInterval(tick,1000);
+})();
+// auto format: AWARE-... ou KEY_... (Platoboost)
+const inp=document.getElementById('key');
+const isPlatoboost = {{ 'true' if info and info.platoboost else 'false' }};
+inp.addEventListener('input',()=>{
+  let raw=inp.value.trim();
+  if(raw.toUpperCase().startsWith('KEY_') || isPlatoboost){
+    // Platoboost: ne pas reformater, garde tel quel (juste trim)
+    return;
+  }
+  let v=raw.toUpperCase().replace(/[^A-F0-9]/g,'');
+  if(v.startsWith('AWARE')) v=v.slice(5);
+  v=v.slice(0,16);
+  let f='AWARE';
+  for(let i=0;i<v.length;i++){ if(i%4===0) f+='-'; f+=v[i]; }
+  if(v.length===0) f=''; 
+  inp.value=f;
+  if(inp.value==='AWARE-') inp.value='';
+});
+</script>
+</body>
+</html>
