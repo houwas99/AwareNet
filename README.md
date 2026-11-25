@@ -1,5 +1,13 @@
 # AwareNet — revue descriptive du dépôt
 
+## to install do the following command : 
+
+1) install python if not installed already
+2) then install requirements.txt
+3) And finally start the following program :
+4) For linux and android = start_termux.sh
+5) for windows = ./start_windows.bat
+
 > **Avertissement de sécurité et de confidentialité**
 >
 > AwareNet est présenté dans le dépôt comme un laboratoire de sensibilisation à la sécurité. Le code contient toutefois des pages imitant des services connus et des fonctions susceptibles de collecter des données sensibles ou des médias depuis un navigateur. N’utilisez ce logiciel que dans un environnement isolé, avec autorisation écrite, participants informés et données de test. Ne l’exposez pas à Internet ni à des personnes réelles sans validation juridique, sécurité et consentement explicite. Ce projet n’est pas un produit de production recommandé.
